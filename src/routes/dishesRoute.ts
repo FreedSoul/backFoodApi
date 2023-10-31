@@ -1,7 +1,9 @@
 import express, { NextFunction, Express, Application, Response, Request } from 'express'
 import boom, { Boom } from '@hapi/boom'
+import { dishesService } from '../services/dishesService'
 
 const router = express.Router()
+const resultpapas = new dishesService()
 
 router.post('/papas', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -19,6 +21,7 @@ router.get('/papas/:papaId', async (req: Request, res: Response, next: NextFunct
         req.query
         if (papaId === 'papas') {
             res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
+            const dishes = resultpapas.find()
         } else {
             throw boom.notFound('no existe el plato con el id ' + papaId)
             // res.status(400).send('no existe el plato con el id ' + papaId)
