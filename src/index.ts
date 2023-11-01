@@ -13,6 +13,7 @@ const port = process.env.PORT || 8000;
 //   res.send('Welcome to Express & TypeScript Server');
 // });
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);

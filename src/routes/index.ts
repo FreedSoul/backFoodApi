@@ -5,7 +5,7 @@ import availableDishesRoute  from './availableDishesRoute'
 
 
 function routerApi(app:Application){
-    app.use('/dishes',dishesRoute)
+    app.use('/menu',dishesRoute)
     app.use('/availableDishes',availableDishesRoute)
     // router.use('/dishes',dishesRoute)
 }
