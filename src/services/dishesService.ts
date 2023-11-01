@@ -17,7 +17,7 @@ class dishesService {
     public async find() {
         const dbConnect = await getConection()
         const res = await dbConnect.query('SELECT * FROM public.users')
-        console.log(res);
+        return res.rows;
         console.log("toda la lista");
     }
     //este data viene de la ruta

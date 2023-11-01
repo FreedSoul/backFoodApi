@@ -18,10 +18,11 @@ router.post('/papas', async (req: Request, res: Response, next: NextFunction) =>
 router.get('/papas/:papaId', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { papaId } = req.params
-        req.query
+        // req.query
         if (papaId === 'papas') {
-            res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
-            const dishes = resultpapas.find()
+            const dishes = await resultpapas.find()
+            // res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
+            res.status(201).json(dishes)
         } else {
             throw boom.notFound('no existe el plato con el id ' + papaId)
             // res.status(400).send('no existe el plato con el id ' + papaId)

@@ -1,7 +1,7 @@
-import { Client } from 'pg'
+import { Pool } from 'pg'
 
 async function getConection(){
-    const client = new Client({
+    const client = new Pool({
         host: 'localhost',
         port: 5432,
         user: 'admin',
