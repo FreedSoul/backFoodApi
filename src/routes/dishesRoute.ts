@@ -38,6 +38,7 @@ router.get('/dish/:dishID', async (req: Request, res: Response, next: NextFuncti
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = req.body
+        console.log(data)
         const createDish = await resultDishes.create(data)
         res.status(201).send({ data })
     } catch (error) {
@@ -48,8 +49,21 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const data = req.body
-        res.status(201).send({ data })
+        const { dishID } = req.params
+        const { dish_name, available, price, ingredients }:
+         { dish_name: string, available: boolean, price: number, ingredients: string } = req.body
+         const data = { dishID, dish_name, available, price, ingredients }
+         if (typeof dish_name === 'string' && typeof available === 'boolean' && typeof price === 'number' && typeof ingredients === 'string') {
+             console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
+             console.log(data, 'BODYYYYYYYYYYYY')
+             // const dishes = await resultDishes.update(data)
+            // res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
+            res.status(201).send('hiii')
+            // .json(dishes)
+        } else {
+            throw boom.notFound('need all the field to change and dishID')
+            // res.status(400).send('no existe el plato con el id ' + papaId)
+        }
     } catch (error) {
         res.status(400).send(error)
         next(error)
@@ -60,13 +74,16 @@ router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) =
 router.patch('/:dishID', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { dishID } = req.params
-        const { dish_name, available, price, ingredients } = req.query
+        const { dish_name, available, price, ingredients }:
+         { dish_name: string, available: string, price: string, ingredients: string } = req.body
         const data = { dishID, dish_name, available, price, ingredients }
         console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
-        if (dish_name || available || price || ingredients) {
-            const dishes = await resultDishes.update(data)
+        console.log(data, 'BODYYYYYYYYYYYY')
+        if (typeof dish_name === 'string' || typeof available === 'string' || typeof price === 'string' || typeof ingredients === 'string') {
+            // const dishes = await resultDishes.update(data)
             // res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
-            res.status(201).json(dishes)
+            res.status(201)
+            // .json(dishes)
         } else {
             throw boom.notFound('need at least 1 field to change and dishID')
             // res.status(400).send('no existe el plato con el id ' + papaId)

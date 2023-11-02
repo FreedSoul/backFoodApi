@@ -22,15 +22,15 @@ class dishesService {
         return res.rows;
     }
     //este data viene de la ruta
-    public async create({ dish_name, price, available, ingredients }: { dish_name: string, price: number, available: string, ingredients: string }) {
+    public async create({ dish_name, price, available, ingredients }: { dish_name: string, price: number, available: boolean, ingredients: string }) {
         const dbConnect:Pool = await getConection()
-        const res:QueryResult = await dbConnect.query(`INSERT INTO dishes (dish_dish_name, available, price, ingredients) VALUES ($1, $2, $3, $4)`, [dish_name, available, price, ingredients])
+        const res:QueryResult = await dbConnect.query(`INSERT INTO dishes (dish_name, available, price, ingredients) VALUES ($1, $2, $3, $4)`, [dish_name, available, price, ingredients])
         console.log(res);
         return res
     }
-    public async update({ id, dish_name, price, available, ingredients }: { id:string,dish_name: string, price: number, available: string, ingredients: string }) {
+    public async update({ dishID, dish_name, price, available, ingredients }: { dishID:string,dish_name: string, price: number, available: string, ingredients: string }) {
         const dbConnect:Pool = await getConection()
-        const res:QueryResult = await dbConnect.query(`UPDATE dishes SET dish_dish_name = $1, available = $2, price = $3, ingredients = $4 WHERE dish_id = $5`, [dish_name, price, available, ingredients,id])
+        const res:QueryResult = await dbConnect.query(`UPDATE dishes SET dish_dish_name = $1, available = $2, price = $3, ingredients = $4 WHERE dish_id = $5`, [dish_name, price, available, ingredients,dishID])
         console.log(res)
         return res
     }
