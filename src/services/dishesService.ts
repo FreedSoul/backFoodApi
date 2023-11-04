@@ -28,9 +28,14 @@ class dishesService {
         console.log(res);
         return res
     }
-    public async update({ dishID, dish_name, price, available, ingredients }: { dishID:string,dish_name: string, price: number, available: string, ingredients: string }) {
+    public async update(queryFields:Array<string>,valuesField:Array<string|number|boolean|Array<string>>) {
         const dbConnect:Pool = await getConection()
-        const res:QueryResult = await dbConnect.query(`UPDATE dishes SET dish_dish_name = $1, available = $2, price = $3, ingredients = $4 WHERE dish_id = $5`, [dish_name, price, available, ingredients,dishID])
+        // const queryJoined:string = queryFields.join(', ')
+        const queryJoined:string = `UPDATE dishes SET ${queryFields.join(', ')} WHERE dish_id = $${queryFields.length + 1} RETURNING *;`
+        console.log(queryJoined)
+        console.log(valuesField)
+        // const res:QueryResult = await dbConnect.query(`UPDATE dishes SET dish_name = $1, available = $2, price = $3, ingredients = $4 WHERE dish_id = $5`, [dish_name, price, available, ingredients,dishID])
+        const res:QueryResult = await dbConnect.query(queryJoined, valuesField)
         console.log(res)
         return res
     }

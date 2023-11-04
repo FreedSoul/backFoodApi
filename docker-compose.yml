@@ -20,5 +20,5 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=root
     ports:
       - 5050:80
-    volumes:
-      - ./postgres-data/pgadmin:/var/lib/pgadmin
+    # volumes:
+      # - ./postgres-data/pgadmin:/var/lib/pgadmin

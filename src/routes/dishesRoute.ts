@@ -9,8 +9,11 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
 
         const dishes = await resultDishes.find()
-        res.status(200).json(dishes)
-
+        // res.status(200).json(dishes)
+        res.status(200).json({
+            status: "success",
+            data: { dishes }
+        })
         // throw boom.notFound('no existe el plato con el id ' + dishID)
         // res.status(400).send('no existe el plato con el id ' + papaId)
 
@@ -23,12 +26,14 @@ router.get('/dish/:dishID', async (req: Request, res: Response, next: NextFuncti
     try {
         const { dishID } = req.params
         if (dishID) {
-            const dishes = await resultDishes.findOne(dishID)
-            res.status(200).json(dishes)
+            const dish = await resultDishes.findOne(dishID)
+            res.status(200).json({
+                status: "success",
+                data: { dish }
+            })
         } else {
             throw boom.notFound('no existe el plato con el id ' + dishID)
         }
-        // res.status(400).send('no existe el plato con el id ' + papaId)
     } catch (error) {
         res.status(400).send(error)
         next(error)
@@ -38,9 +43,15 @@ router.get('/dish/:dishID', async (req: Request, res: Response, next: NextFuncti
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = req.body
-        console.log(data)
         const createDish = await resultDishes.create(data)
-        res.status(201).send({ data })
+        if (createDish) {
+            res.status(200).json({
+                status: "success",
+                data: { message: 'dish created' }
+            })
+        } else {
+            throw boom.notFound('dish not created')
+        }
     } catch (error) {
         res.status(400).send(error)
         next(error)
@@ -51,19 +62,47 @@ router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) =
     try {
         const { dishID } = req.params
         const { dish_name, available, price, ingredients }:
-         { dish_name: string, available: boolean, price: number, ingredients: string } = req.body
-         const data = { dishID, dish_name, available, price, ingredients }
-         if (typeof dish_name === 'string' && typeof available === 'boolean' && typeof price === 'number' && typeof ingredients === 'string') {
-             console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
-             console.log(data, 'BODYYYYYYYYYYYY')
-             // const dishes = await resultDishes.update(data)
-            // res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
-            res.status(201).send('hiii')
-            // .json(dishes)
-        } else {
-            throw boom.notFound('need all the field to change and dishID')
-            // res.status(400).send('no existe el plato con el id ' + papaId)
+            { dish_name: string, available: boolean, price: number, ingredients: string } = req.body
+
+        const queryFields: Array<string> = []
+        const valuesField: Array<string | number | boolean | Array<string>> = []
+        let counter: number = 0
+
+        if (typeof dish_name === 'string' && typeof available === 'boolean' && typeof price === 'number' && typeof ingredients === 'string') {
+            console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
+            counter++
+            queryFields.push(`dish_name = $${counter}`)
+            valuesField.push(dish_name)
+            counter++
+            queryFields.push(`available = $${counter}`)
+            valuesField.push(available)
+            counter++
+            queryFields.push(`price = $${counter}`)
+            valuesField.push(price)
+            counter++
+            queryFields.push(`ingredients = $${counter}`)
+            valuesField.push(ingredients)
         }
+        if (dishID) {
+            valuesField.push(dishID)
+        }
+        if (queryFields.length === 0 && !!dishID) {
+            throw boom.notFound('need at least 1 field to change and dishID')
+            res.status(400).json({ status: "error", message: 'no fields to update specified' })
+        }
+
+        const dishes = await resultDishes.update(queryFields, valuesField)
+        if (dishes) {
+            console.log(dishes)
+            res.status(200).json({
+                status: "success",
+                message: "the register has been updated"
+            })
+        }
+        //  else {
+        //     throw boom.notFound('need all the field to change and dishID')
+        //     // res.status(400).send('no existe el plato con el id ' + papaId)
+        // }
     } catch (error) {
         res.status(400).send(error)
         next(error)
@@ -75,18 +114,46 @@ router.patch('/:dishID', async (req: Request, res: Response, next: NextFunction)
     try {
         const { dishID } = req.params
         const { dish_name, available, price, ingredients }:
-         { dish_name: string, available: string, price: string, ingredients: string } = req.body
-        const data = { dishID, dish_name, available, price, ingredients }
-        console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
-        console.log(data, 'BODYYYYYYYYYYYY')
-        if (typeof dish_name === 'string' || typeof available === 'string' || typeof price === 'string' || typeof ingredients === 'string') {
-            // const dishes = await resultDishes.update(data)
-            // res.status(201).send('rutas de platos ' + `con el id ${papaId}`)
-            res.status(201)
-            // .json(dishes)
-        } else {
+            { dish_name: string, available: string, price: string, ingredients: Array<string> } = req.body
+        const queryFields: Array<string> = []
+        const valuesField: Array<string | number | boolean | Array<string>> = []
+        let counter = 0
+        // console.log(dish_name, available, price, ingredients, 'BODYYYYYYYYYYYY')
+        if (typeof dish_name === 'string') {
+            counter++
+            queryFields.push(`dish_name = $${counter}`)
+            valuesField.push(dish_name)
+        }
+        if (typeof available === 'boolean') {
+            counter++
+            queryFields.push(`available = $${counter}`)
+            valuesField.push(available)
+        }
+        if (typeof price === 'number') {
+            counter++
+            queryFields.push(`price = $${counter}`)
+            valuesField.push(price)
+        }
+        if (typeof ingredients === 'object') {
+            counter++
+            queryFields.push(`ingredients = $${counter}`)
+            valuesField.push(ingredients)
+        }
+        if (dishID) {
+            valuesField.push(dishID)
+        }
+        if (queryFields.length === 0) {
             throw boom.notFound('need at least 1 field to change and dishID')
-            // res.status(400).send('no existe el plato con el id ' + papaId)
+            res.status(400).json({ Error: 'no fields to update specified' })
+        }
+
+        const dishes = await resultDishes.update(queryFields, valuesField)
+        if (dishes) {
+            console.log(dishes)
+            res.status(200).json({
+                status: "success",
+                message: "the register has been updated"
+            })
         }
     } catch (error) {
         res.status(400).send(error)
@@ -100,9 +167,15 @@ router.delete('/:dishID', async (req: Request, res: Response, next: NextFunction
         if (dishID) {
             const deleteDishes: number = await resultDishes.delete(dishID)
             if (deleteDishes > 0) {
-                res.status(200).json({ message: 'deleted successfully!' })
+                res.status(200).json({
+                    status: "success",
+                    data: { message: 'deleted successfully!' }
+                })
             } else {
-                res.status(200).json({ message: 'Already deleted' })
+                res.status(200).json({
+                    status: "success",
+                    data: { message: 'Already deleted' }
+                })
             }
         } else {
             throw boom.notFound('tienes que añadir un ID de plato para ejecutar la eliminacion')
