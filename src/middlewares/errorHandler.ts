@@ -13,10 +13,10 @@ function errorHandler(
     error: ErrorEvent, req: Request, res: Response, next: NextFunction
 ) {
     console.log("errorHandler")
-    res.status(500).json({
-        error: error.message,
-        type: error.type,
-    })
+    // res.status(500).json({
+    //     error: error.message,
+    //     type: error.type,
+    // })
 }
 
 function boomHandler(
@@ -24,7 +24,7 @@ function boomHandler(
 ) {
     if (error.isBoom) {
         const { output } = error
-        res.status(output.statusCode).json(output.payload)
+        res.status(output.statusCode).json(output.payload.message)
     }else{
         next(error)
     }
