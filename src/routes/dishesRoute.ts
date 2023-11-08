@@ -60,7 +60,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         if (valuesField.length !== 0 && bodyKeys) {
             createDish = await resultDishes.create(bodyKeys, valuesField)
         }
-        if (createDish!==null) {
+        if (createDish !== null) {
             res.status(200).json({
                 status: "success",
                 data: { message: 'dish created' }
@@ -100,27 +100,35 @@ router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) =
 
             bodyKeys = Object.keys(req.body)
             bodyKeys = bodyKeys.map((key, index) => `${key} = $${index + 1}`)
-            console.log(bodyKeys, "bodyKeys1")
+            // console.log(bodyKeys, "bodyKeys1")
             valuesField = Object.values(req.body)
         }
         if (dishID) {
             valuesField.push(dishID)
 
-            console.log(valuesField, "valuesField")
+            // console.log(valuesField, "valuesField")
         }
         if (bodyKeys.length === 0 || dishID === undefined) {
             // throw boom.notFound('need all the fields and dishID to make a new register')
             res.status(400).json({ status: "error", message: 'need all the fields and dishID to make a new register' })
-        }else{
+        } else {
             dishes = await resultDishes.update(bodyKeys, valuesField)
         }
 
-        if (dishes!==null) {
-            // console.log(dishes)
-            res.status(200).json({
-                status: "success",
-                message: "the register has been updated"
-            })
+        if (dishes !== null) {
+            if (dishes === 0) {
+                res.status(200).json({
+                    status: "error",
+                    message: `the register with the id ${dishID} doesn't exist`
+                })
+            } else {
+
+                // console.log(dishes)
+                res.status(200).json({
+                    status: "success",
+                    message: "the register has been updated"
+                })
+            }
         }
         //  else {
         //     throw boom.notFound('need all the field to change and dishID')

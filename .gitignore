@@ -2,3 +2,4 @@ node_modules
 dist
 servicios.drawio
 postgres-data
+pgadmin-data
