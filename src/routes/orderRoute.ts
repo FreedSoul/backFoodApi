@@ -4,6 +4,7 @@ import { orderService } from '../services/orderService'
 
 const router = express.Router()
 const resultOrders = new orderService()
+const cache = {}
 
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
@@ -16,6 +17,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
                 data: { orders }
             })
         }
+        
         throw boom.notFound('no existe el plato con el id ')
         // res.status(400).send('no existe el plato con el id ' + papaId)
     } catch (error) {
@@ -56,8 +58,8 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.put('/:orderID', async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-
+        const header = req.headers['x-idempotence-key']
+        cache[header] = res;
         //  else {
         //     throw boom.notFound('need all the field to change and orderID')
         //     // res.status(400).send('no existe el plato con el id ' + papaId)

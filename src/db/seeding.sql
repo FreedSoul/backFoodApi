@@ -83,11 +83,12 @@ INSERT INTO orders (
     totalprice
   )
 VALUES (
-    priority:boolean,
-    'orderitems:ARRAY',
-    customer_id:integer,
-    totalprice:integer
-  );
+    false,
+    '{1,2,3}',
+    1,
+    4500
+  )
+;
 
 -- INSERT INTO till (
 --     priority,

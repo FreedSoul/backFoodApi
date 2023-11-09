@@ -3,3 +3,4 @@ dist
 servicios.drawio
 postgres-data
 pgadmin-data
+.vscode
