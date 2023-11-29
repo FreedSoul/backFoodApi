@@ -1,5 +1,5 @@
 import express, { NextFunction, Response, Request } from 'express'
-import boom, { Boom } from '@hapi/boom'
+import boom from '@hapi/boom'
 import { orderService } from '../services/orderService'
 
 const router = express.Router()

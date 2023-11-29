@@ -1,5 +1,5 @@
 import express, { NextFunction, Response, Request } from 'express'
-import boom, { Boom } from '@hapi/boom'
+import boom from '@hapi/boom'
 import { dishesService } from '../services/dishesService'
 
 const router = express.Router()
@@ -80,24 +80,11 @@ router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) =
         const { dish_name, available, price, ingredients }:
             { dish_name: string, available: boolean, price: number, ingredients: string } = req.body
         let valuesField: Array<string | number | boolean | Array<string>> = []
-        let counter: number = 0
+        // let counter: number = 0
         let bodyKeys: Array<string> = []
         let dishes = null
         //reemplazar por zod
         if (typeof dish_name === 'string' && typeof available === 'boolean' && typeof price === 'number' && typeof ingredients === 'object') {
-            // counter++
-            // queryFields.push(`dish_name = $${counter}`)
-            // valuesField.push(dish_name)
-            // counter++
-            // queryFields.push(`available = $${counter}`)
-            // valuesField.push(available)
-            // counter++
-            // queryFields.push(`price = $${counter}`)
-            // valuesField.push(price)
-            // counter++
-            // queryFields.push(`ingredients = $${counter}`)
-            // valuesField.push(ingredients)
-
             bodyKeys = Object.keys(req.body)
             bodyKeys = bodyKeys.map((key, index) => `${key} = $${index + 1}`)
             // console.log(bodyKeys, "bodyKeys1")
@@ -105,8 +92,6 @@ router.put('/:dishID', async (req: Request, res: Response, next: NextFunction) =
         }
         if (dishID) {
             valuesField.push(dishID)
-
-            // console.log(valuesField, "valuesField")
         }
         if (bodyKeys.length === 0 || dishID === undefined) {
             // throw boom.notFound('need all the fields and dishID to make a new register')
